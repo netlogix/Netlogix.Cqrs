@@ -7,11 +7,17 @@ namespace Netlogix\Cqrs\Command;
 
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
+use TYPO3\Flow\Error\Result;
 use TYPO3\Flow\Utility\Algorithms;
 
 /**
  */
-abstract class Command implements CommandInterface{
+abstract class Command implements CommandInterface {
+
+	/**
+	 * @var string
+	 */
+	protected $Persistence_Object_Identifier;
 
 	/**
 	 * @var string
@@ -34,6 +40,7 @@ abstract class Command implements CommandInterface{
 	 */
 	public function __construct() {
 		$this->commandId = Algorithms::generateUUID();
+		$this->Persistence_Object_Identifier = $this->commandId;
 	}
 
 	/**
@@ -55,6 +62,13 @@ abstract class Command implements CommandInterface{
 	 */
 	public function attachStatusObserver(CommandStatusObserverInterface $observer) {
 		$this->statusUpdateObservers[] = $observer;
+	}
+
+	/**
+	 * @return Result
+	 */
+	public function getValidationResult() {
+		return new Result();
 	}
 
 	/**
