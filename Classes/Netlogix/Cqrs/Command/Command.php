@@ -10,25 +10,22 @@ use Doctrine\ORM\Mapping as ORM;
 use TYPO3\Flow\Utility\Algorithms;
 
 /**
- * @Flow\Entity
  */
 abstract class Command implements CommandInterface{
 
 	/**
 	 * @var string
-	 * @Flow\Identity
-	 * @ORM\Column(length=36)
 	 */
 	protected $commandId;
 
 	/**
 	 * @var int
+	 * @see Command::updateStatus
 	 */
 	private $status = CommandInterface::STATUS_PENDING;
 
 	/**
 	 * @var CommandStatusObserverInterface[]
-	 * @Flow\Transient
 	 */
 	private $statusUpdateObservers = [];
 
