@@ -12,6 +12,9 @@ use Netlogix\Cqrs\Command\CommandBus;
 use Netlogix\Cqrs\Command\CommandInterface;
 use TYPO3\Flow\Utility\Arrays;
 use PHPUnit_Framework_Assert as Assert;
+use TYPO3\Flow\Property\PropertyMapper;
+use TYPO3\Flow\Property\PropertyMappingConfiguration;
+use TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter;
 
 require_once(__DIR__ . '/../../../../../Flowpack.Behat/Tests/Behat/FlowContext.php');
 
@@ -61,16 +64,22 @@ class CqrsContext extends FlowContext {
 	 * @Given /^I have a "([^"]*)" command with parameters$/
 	 * @var string $commandName
 	 * @var TableNode $parameters
+	 * @throws \Exception
 	 */
-	public function iHaveACommandWithParameters($commandName, TableNode $parameters) {
-		foreach ([$commandName, str_replace('.', '\\', $this->package) . '\\Domain\\Command\\' . $commandName . 'Command'] as $possibleCommandClass) {
+	public function iHaveACommandWithParameters($commandName, TableNode $parameters)
+	{
+		$propertyMappingConfiguration = new PropertyMappingConfiguration();
+		$propertyMappingConfiguration->allowAllProperties();
+		$propertyMappingConfiguration->setTypeConverterOption(PersistentObjectConverter::class, PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, true);
+		$propertyMapper = $this->objectManager->get(PropertyMapper::class);
+
+		foreach ([$commandName,  str_replace('.', '\\', $this->package) . '\\Domain\\Command\\' . $commandName . 'Command'] as $possibleCommandClass) {
 			if (class_exists($possibleCommandClass)) {
-				$reflectedCommand = new \ReflectionClass($possibleCommandClass);
-				$this->command = $reflectedCommand->newInstanceArgs($parameters->getRowsHash());
+				$this->command = $propertyMapper->convert($parameters->getRowsHash(), $possibleCommandClass, $propertyMappingConfiguration);
 				return;
 			}
 		}
-		throw new \Exception('Could not find command "' . $commandName . '"');
+		throw new \Exception('Could not find command "' . $commandName . '" in package "' . $this->package . '"');
 	}
 
 	/**
@@ -85,6 +94,7 @@ class CqrsContext extends FlowContext {
 	 * @Then /^the database contains a "([^"]*)" with values$/
 	 * @param string $modelName
 	 * @param TableNode $values
+	 * @throws \Exception
 	 */
 	public function theDatabaseContainsAWithValues($modelName, TableNode $values) {
 		$modelClass = NULL;
