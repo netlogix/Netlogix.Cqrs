@@ -30,7 +30,7 @@ class CommandConverter extends PersistentObjectConverter
         if (!is_subclass_of($targetType, $this->targetType)) {
             return false;
         }
-        if (!isset($source['__identity'])) {
+        if (is_array($source) && !isset($source['__identity'])) {
             return false;
         }
         return true;
