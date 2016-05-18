@@ -73,13 +73,39 @@ class CqrsContext extends FlowContext {
 		$propertyMappingConfiguration->setTypeConverterOption(PersistentObjectConverter::class, PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, true);
 		$propertyMapper = $this->objectManager->get(PropertyMapper::class);
 
-		foreach ([$commandName,  str_replace('.', '\\', $this->package) . '\\Domain\\Command\\' . $commandName . 'Command'] as $possibleCommandClass) {
-			if (class_exists($possibleCommandClass)) {
-				$this->command = $propertyMapper->convert($parameters->getRowsHash(), $possibleCommandClass, $propertyMappingConfiguration);
-				return;
-			}
+		$commandClass = $this->resolveClassName($commandName, 'Domain\\Command\\', 'Command');
+		$this->command = $propertyMapper->convert($parameters->getRowsHash(), $commandClass, $propertyMappingConfiguration);
+	}
+
+	/**
+	 * @Given /^I have a "([^"]*)" with values$/
+	 * @param string $class
+	 * @param TableNode $values
+	 */
+	public function iHaveAEntityWithValues($class, TableNode $values) {
+		$propertyMappingConfiguration = new \TYPO3\Flow\Property\PropertyMappingConfiguration();
+		$propertyMappingConfiguration->allowAllProperties();
+		$propertyMappingConfiguration->setTypeConverterOption('TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter', \TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, TRUE);
+		/** @var \TYPO3\Flow\Property\PropertyMapper $propertyMapper */
+		$propertyMapper = $this->objectManager->get('TYPO3\Flow\Property\PropertyMapper');
+		$row = $values->getRowsHash();
+		$identifier = '';
+		if (isset($row['persistence_object_identifier'])) {
+			$identifier = $row['persistence_object_identifier'];
+			unset($row['persistence_object_identifier']);
 		}
-		throw new \Exception('Could not find command "' . $commandName . '" in package "' . $this->package . '"');
+
+		$entityClass = $this->resolveClassName($class, 'Domain\\Model\\');
+
+		$entity = $propertyMapper->convert($row, $entityClass, $propertyMappingConfiguration);
+		if ($propertyMapper->getMessages()->hasErrors()) {
+			throw new \Exception('Error while mapping entity: ' . print_r($propertyMapper->getMessages(), TRUE));
+		}
+		if ($identifier) {
+			\TYPO3\Flow\Reflection\ObjectAccess::setProperty($entity, 'Persistence_Object_Identifier', $identifier, TRUE);
+		}
+		$this->objectManager->get($this->resolveClassName($class, 'Domain\\Repository\\', 'Repository'))->add($entity);
+		$this->persistAll();
 	}
 
 	/**
@@ -97,16 +123,7 @@ class CqrsContext extends FlowContext {
 	 * @throws \Exception
 	 */
 	public function theDatabaseContainsAWithValues($modelName, TableNode $values) {
-		$modelClass = NULL;
-		foreach ([$modelName, str_replace('.', '\\', $this->package) . '\\Domain\\Model\\' . $modelName] as $possibleModelClass) {
-			if (class_exists($possibleModelClass)) {
-				$modelClass = $possibleModelClass;
-				break;
-			}
-		}
-		if ($modelClass === NULL) {
-			throw new \Exception('Could not find model "' . $modelName . '"');
-		}
+		$modelClass = $this->resolveClassName($modelName, 'Domain\\Model\\');
 
 		/** @var EntityManager $entityManager */
 		$entityManager = $this->objectManager->get('Doctrine\Common\Persistence\ObjectManager');
@@ -125,5 +142,20 @@ class CqrsContext extends FlowContext {
 		if (count($result) !== 1) {
 			throw new \Exception('Query returned ' . count($result) . ' results');
 		}
+	}
+
+	/**
+	 * @param string $className
+	 * @param string $prefix
+	 * @param string $suffix
+	 * @return string
+	 */
+	protected function resolveClassName($className, $prefix = '', $suffix = '') {
+		foreach ([$className, str_replace('.', '\\', $this->package) . '\\' . $prefix . $className . $suffix] as $possibleClassName) {
+			if (class_exists($possibleClassName)) {
+				return $possibleClassName;
+			}
+		}
+		throw new \Exception('Could not find class "' . $className . '"');
 	}
 }
