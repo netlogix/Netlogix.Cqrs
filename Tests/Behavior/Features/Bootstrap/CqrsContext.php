@@ -145,6 +145,34 @@ class CqrsContext extends FlowContext {
 	}
 
 	/**
+	 * @Then /^the database contains no "([^"]*)" with values$/
+	 * @param string $modelName
+	 * @param TableNode $values
+	 * @throws \Exception
+	 */
+	public function theDatabaseContainsNoWithValues($modelName, TableNode $values) {
+		$modelClass = $this->resolveClassName($modelName, 'Domain\\Model\\');
+
+		/** @var EntityManager $entityManager */
+		$entityManager = $this->objectManager->get('Doctrine\Common\Persistence\ObjectManager');
+		$queryBuilder = $entityManager->createQueryBuilder();
+		$queryBuilder
+			->select('m')
+			->from($modelClass, 'm')
+			->setParameters($values->getRowsHash());
+
+		foreach ($values->getRowsHash() as $key => $value) {
+			$queryBuilder->andWhere($queryBuilder->expr()->eq('m.' . $key, ':' . $key));
+		}
+
+		$result = $queryBuilder->getQuery()->getResult();
+
+		if (count($result) !== 0) {
+			throw new \Exception('Query returned ' . count($result) . ' results');
+		}
+	}
+
+	/**
 	 * @param string $className
 	 * @param string $prefix
 	 * @param string $suffix
@@ -156,6 +184,6 @@ class CqrsContext extends FlowContext {
 				return $possibleClassName;
 			}
 		}
-		throw new \Exception('Could not find class "' . $className . '"');
+		throw new \Exception('Could not find class "' . $prefix . $className . $suffix . '"');
 	}
 }
