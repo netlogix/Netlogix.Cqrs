@@ -85,6 +85,7 @@ class CqrsContext extends FlowContext {
 	public function iHaveAEntityWithValues($class, TableNode $values) {
 		$propertyMappingConfiguration = new \TYPO3\Flow\Property\PropertyMappingConfiguration();
 		$propertyMappingConfiguration->allowAllProperties();
+		$propertyMappingConfiguration->forProperty('*')->allowAllProperties();
 		$propertyMappingConfiguration->setTypeConverterOption('TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter', \TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, TRUE);
 		/** @var \TYPO3\Flow\Property\PropertyMapper $propertyMapper */
 		$propertyMapper = $this->objectManager->get('TYPO3\Flow\Property\PropertyMapper');
@@ -93,6 +94,21 @@ class CqrsContext extends FlowContext {
 		if (isset($row['persistence_object_identifier'])) {
 			$identifier = $row['persistence_object_identifier'];
 			unset($row['persistence_object_identifier']);
+		}
+		// Handle dot notation
+		foreach ($row as $key => $value) {
+			if (strpos($key, '.') !== FALSE) {
+				$keyParts = explode('.', $key);
+				$currentPosition = &$row;
+				foreach ($keyParts as $keyPart) {
+					if (!array_key_exists($keyPart, $currentPosition)) {
+						$currentPosition[$keyPart] = array();
+					}
+					$currentPosition = &$currentPosition[$keyPart];
+				}
+				$currentPosition = $value;
+				unset($row[$key]);
+			}
 		}
 
 		$entityClass = $this->resolveClassName($class, 'Domain\\Model\\');
