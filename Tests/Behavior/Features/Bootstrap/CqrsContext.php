@@ -197,18 +197,31 @@ class CqrsContext extends FlowContext {
 		$queryBuilder = $entityManager->createQueryBuilder();
 		$queryBuilder
 			->select('m')
-			->from($modelClass, 'm')
-			->setParameters($values);
+			->from($modelClass, 'm');
 
 		$modelClassMetaData = $entityManager->getMetadataFactory()->getMetadataFor($modelClass);
 
+		$existingJoins = [];
 		foreach ($values as $key => $value) {
-			if ($modelClassMetaData->hasAssociation($key)) {
-				$queryBuilder->join('m.' . $key, $key);
-				$queryBuilder->andWhere($queryBuilder->expr()->eq($key, ':' . $key));
+			$parameterName = $key;
+			if (strpos($parameterName, '.') !== false) {
+				$parameterName = str_replace('.', '_', $parameterName);
+				list($key, $childKey) = explode('.', $key);
+				if (!isset($existingJoins[$key])) {
+					$existingJoins[$key] = $key;
+					$queryBuilder->join('m.' . $key, $key);
+				}
+				$queryBuilder->andWhere($queryBuilder->expr()->eq($key . '.' . $childKey, ':' . $parameterName));
+			} elseif ($modelClassMetaData->hasAssociation($key)) {
+				if (!isset($existingJoins[$key])) {
+					$existingJoins[$key] = $key;
+					$queryBuilder->join('m.' . $key, $key);
+				}
+				$queryBuilder->andWhere($queryBuilder->expr()->eq($key, ':' . $parameterName));
 			} else {
-				$queryBuilder->andWhere($queryBuilder->expr()->eq('m.' . $key, ':' . $key));
+				$queryBuilder->andWhere($queryBuilder->expr()->eq('m.' . $key, ':' . $parameterName));
 			}
+			$queryBuilder->setParameter($parameterName, $value);
 		}
 
 		return $queryBuilder->getQuery();
