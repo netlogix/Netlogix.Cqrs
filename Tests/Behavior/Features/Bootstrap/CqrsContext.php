@@ -141,19 +141,9 @@ class CqrsContext extends FlowContext {
 	public function theDatabaseContainsAWithValues($modelName, TableNode $values) {
 		$modelClass = $this->resolveClassName($modelName, 'Domain\\Model\\');
 
-		/** @var EntityManager $entityManager */
-		$entityManager = $this->objectManager->get('Doctrine\Common\Persistence\ObjectManager');
-		$queryBuilder = $entityManager->createQueryBuilder();
-		$queryBuilder
-			->select('m')
-			->from($modelClass, 'm')
-			->setParameters($values->getRowsHash());
+		$query = $this->buildQueryForEntity($modelClass, $values->getRowsHash());
 
-		foreach ($values->getRowsHash() as $key => $value) {
-			$queryBuilder->andWhere($queryBuilder->expr()->eq('m.' . $key, ':' . $key));
-		}
-
-		$result = $queryBuilder->getQuery()->getResult();
+		$result = $query->getResult();
 
 		if (count($result) !== 1) {
 			throw new \Exception('Query returned ' . count($result) . ' results');
@@ -169,19 +159,9 @@ class CqrsContext extends FlowContext {
 	public function theDatabaseContainsNoWithValues($modelName, TableNode $values) {
 		$modelClass = $this->resolveClassName($modelName, 'Domain\\Model\\');
 
-		/** @var EntityManager $entityManager */
-		$entityManager = $this->objectManager->get('Doctrine\Common\Persistence\ObjectManager');
-		$queryBuilder = $entityManager->createQueryBuilder();
-		$queryBuilder
-			->select('m')
-			->from($modelClass, 'm')
-			->setParameters($values->getRowsHash());
+		$query = $this->buildQueryForEntity($modelClass, $values->getRowsHash());
 
-		foreach ($values->getRowsHash() as $key => $value) {
-			$queryBuilder->andWhere($queryBuilder->expr()->eq('m.' . $key, ':' . $key));
-		}
-
-		$result = $queryBuilder->getQuery()->getResult();
+		$result = $query->getResult();
 
 		if (count($result) !== 0) {
 			throw new \Exception('Query returned ' . count($result) . ' results');
@@ -201,5 +181,49 @@ class CqrsContext extends FlowContext {
 			}
 		}
 		throw new \Exception('Could not find class "' . $prefix . $className . $suffix . '"');
+	}
+
+	/**
+	 * Build a query to find a entity based on values
+	 *
+	 * @param string $modelClass
+	 * @param array $values
+	 * @return \Doctrine\ORM\Query
+	 * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+	 */
+	protected function buildQueryForEntity($modelClass, array $values) {
+		/** @var EntityManager $entityManager */
+		$entityManager = $this->objectManager->get('Doctrine\Common\Persistence\ObjectManager');
+		$queryBuilder = $entityManager->createQueryBuilder();
+		$queryBuilder
+			->select('m')
+			->from($modelClass, 'm');
+
+		$modelClassMetaData = $entityManager->getMetadataFactory()->getMetadataFor($modelClass);
+
+		$existingJoins = [];
+		foreach ($values as $key => $value) {
+			$parameterName = $key;
+			if (strpos($parameterName, '.') !== false) {
+				$parameterName = str_replace('.', '_', $parameterName);
+				list($key, $childKey) = explode('.', $key);
+				if (!isset($existingJoins[$key])) {
+					$existingJoins[$key] = $key;
+					$queryBuilder->join('m.' . $key, $key);
+				}
+				$queryBuilder->andWhere($queryBuilder->expr()->eq($key . '.' . $childKey, ':' . $parameterName));
+			} elseif ($modelClassMetaData->hasAssociation($key)) {
+				if (!isset($existingJoins[$key])) {
+					$existingJoins[$key] = $key;
+					$queryBuilder->join('m.' . $key, $key);
+				}
+				$queryBuilder->andWhere($queryBuilder->expr()->eq($key, ':' . $parameterName));
+			} else {
+				$queryBuilder->andWhere($queryBuilder->expr()->eq('m.' . $key, ':' . $parameterName));
+			}
+			$queryBuilder->setParameter($parameterName, $value);
+		}
+
+		return $queryBuilder->getQuery();
 	}
 }
