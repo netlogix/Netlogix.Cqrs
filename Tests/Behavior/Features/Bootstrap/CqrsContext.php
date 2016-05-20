@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManager;
 use Flowpack\Behat\Tests\Behat\FlowContext;
 use Netlogix\Cqrs\Command\CommandBus;
 use Netlogix\Cqrs\Command\CommandInterface;
+use TYPO3\Flow\Resource\ResourceManager;
 use TYPO3\Flow\Utility\Arrays;
 use PHPUnit_Framework_Assert as Assert;
 use TYPO3\Flow\Property\PropertyMapper;
@@ -120,9 +121,21 @@ class CqrsContext extends FlowContext {
 		if ($identifier) {
 			\TYPO3\Flow\Reflection\ObjectAccess::setProperty($entity, 'Persistence_Object_Identifier', $identifier, TRUE);
 		}
-		$this->objectManager->get($this->resolveClassName($class, 'Domain\\Repository\\', 'Repository'))->add($entity);
+		$this->objectManager->get(\TYPO3\Flow\Persistence\PersistenceManagerInterface::class)->add($entity);
 		$this->persistAll();
 	}
+
+	/**
+	 * @Given /^I have a resource "([^"]*)" with content "([^"]*)"$/
+	 * @param string $identifier
+	 * @param string $content
+	 */
+	public function iHaveAResourceWithContent($identifier, $content) {
+		$resourceManager = $this->objectManager->get(ResourceManager::class);
+		$resourceManager->importResourceFromContent($content, $identifier, ResourceManager::DEFAULT_PERSISTENT_COLLECTION_NAME, $identifier);
+		$this->persistAll();
+	}
+
 
 	/**
 	 * @When /^I execute the command$/
