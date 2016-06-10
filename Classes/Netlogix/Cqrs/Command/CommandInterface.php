@@ -15,12 +15,6 @@ interface CommandInterface {
 	const STATUS_SUCCESS = 3;
 	const STATUS_FAILED = 4;
 
-	/**
-	 * Executes the command.
-	 *
-	 * @return void
-	 */
-	public function execute();
 
 	/**
 	 * Get the current status of the command. This will return one of the defined STATUS_* constants.

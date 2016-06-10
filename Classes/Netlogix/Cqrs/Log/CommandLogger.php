@@ -5,7 +5,7 @@ namespace Netlogix\Cqrs\Log;
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use Netlogix\Cqrs\Command\Command;
+use Netlogix\Cqrs\Command\AbstractCommand;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -22,9 +22,9 @@ class CommandLogger {
 	/**
 	 * Log the given command
 	 *
-	 * @param Command $command
+	 * @param AbstractCommand $command
 	 */
-	public function logCommand(Command $command) {
+	public function logCommand(AbstractCommand $command) {
 		$commandLogEntry = new CommandLogEntry($command);
 		$this->commandLogEntryRepository->add($commandLogEntry);
 	}

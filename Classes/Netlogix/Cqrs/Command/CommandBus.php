@@ -7,6 +7,8 @@ namespace Netlogix\Cqrs\Command;
 
 use Netlogix\Cqrs\Log\CommandLogger;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Object\ObjectManagerInterface;
+use TYPO3\Flow\Reflection\ReflectionService;
 
 /**
  * The command bus accepts commands and delegates execution of given commands
@@ -14,10 +16,9 @@ use TYPO3\Flow\Annotations as Flow;
 class CommandBus {
 
 	/**
-	 * @var CommandHandlerInterface
-	 * @Flow\Inject
+	 * @var CommandHandlerInterface[]
 	 */
-	protected $commandHandler;
+	protected $commandHandlers;
 
 	/**
 	 * @var CommandLogger
@@ -26,12 +27,39 @@ class CommandBus {
 	protected $commandLogger;
 
 	/**
+	 * @var ReflectionService
+	 * @Flow\Inject
+	 */
+	protected $reflectionService;
+
+	/**
+	 * @var ObjectManagerInterface
+	 * @Flow\Inject
+	 */
+	protected $objectManager;
+
+	/**
 	 * @param CommandInterface $command
 	 */
 	public function delegate(CommandInterface $command) {
-		$this->commandHandler->handle($command);
+		$this->initializeCommandHandlers();
+		foreach ($this->commandHandlers as $commandHandler) {
+			if ($commandHandler->canHandle($command)) {
+				$commandHandler->handle($command);
+			}
+		}
 		if ($command instanceof Command) {
 			$this->commandLogger->logCommand($command);
+		}
+	}
+
+	protected function initializeCommandHandlers() {
+		if ($this->commandHandlers === NULL) {
+			$classNames = $this->reflectionService->getAllImplementationClassNamesForInterface(CommandHandlerInterface::class);
+			$this->commandHandlers = array();
+			foreach ($classNames as $className) {
+				$this->commandHandlers[] = $this->objectManager->get($className);
+			}
 		}
 	}
 }

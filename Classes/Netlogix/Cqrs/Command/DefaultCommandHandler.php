@@ -8,7 +8,17 @@ namespace Netlogix\Cqrs\Command;
 /**
  * Handles commands and executes them directly
  */
-class DefaultCommandHandler implements CommandHandlerInterface{
+class DefaultCommandHandler implements CommandHandlerInterface {
+
+	/**
+	 * Check whether a command handler can handle a given command
+	 *
+	 * @param CommandInterface $command
+	 * @return boolean
+	 */
+	public function canHandle(CommandInterface $command) {
+		return $command instanceof SynchronousCommandInterface;
+	}
 
 	/**
 	 * Execute the given command
@@ -16,6 +26,9 @@ class DefaultCommandHandler implements CommandHandlerInterface{
 	 * @param CommandInterface $command
 	 */
 	public function handle(CommandInterface $command) {
+		if (!($command instanceof SynchronousCommandInterface)) {
+			throw new \InvalidArgumentException('$command must implement SynchronousCommandInterface to be handled', 1465484134);
+		}
 		$command->execute();
 	}
 }

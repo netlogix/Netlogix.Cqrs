@@ -11,6 +11,14 @@ namespace Netlogix\Cqrs\Command;
 interface CommandHandlerInterface {
 
 	/**
+	 * Check whether a command handler can handle a given command
+	 *
+	 * @param CommandInterface $command
+	 * @return boolean
+	 */
+	public function canHandle(CommandInterface $command);
+
+	/**
 	 * Handle a given command
 	 *
 	 * @param CommandInterface $command
