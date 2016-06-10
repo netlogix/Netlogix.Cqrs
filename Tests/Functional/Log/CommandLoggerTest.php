@@ -6,7 +6,6 @@ namespace Netlogix\Cqrs\Tests\Functional\Log;
  */
 
 use Doctrine\ORM\EntityNotFoundException;
-use Netlogix\Cqrs\Command\Command;
 use Netlogix\Cqrs\Log\CommandLogEntry;
 use Netlogix\Cqrs\Log\CommandLogger;
 use Netlogix\Cqrs\Tests\Functional\Fixtures\EntityContainingTestCommand;

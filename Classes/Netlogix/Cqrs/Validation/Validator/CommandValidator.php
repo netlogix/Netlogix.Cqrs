@@ -1,7 +1,7 @@
 <?php
 namespace Netlogix\Cqrs\Validation\Validator;
 
-use Netlogix\Cqrs\Command\Command;
+use Netlogix\Cqrs\Command\AbstractCommand;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Validation\Exception\InvalidValidationOptionsException;
 use TYPO3\Flow\Validation\Validator\AbstractValidator;
@@ -13,12 +13,12 @@ class CommandValidator extends AbstractValidator
 {
 
     /**
-     * @param Command $value
+     * @param AbstractCommand $value
      * @throws InvalidValidationOptionsException
      */
     protected function isValid($value)
     {
-        if (!$value instanceof Command) {
+        if (!$value instanceof AbstractCommand) {
             throw new InvalidValidationOptionsException('The value supplied for the CommandValidator must be of type Command.',
                 1459251080);
         }

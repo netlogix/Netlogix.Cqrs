@@ -5,7 +5,7 @@ namespace Netlogix\Cqrs\Log;
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use Netlogix\Cqrs\Command\Command;
+use Netlogix\Cqrs\Command\AbstractCommand;
 use TYPO3\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -35,12 +35,17 @@ class CommandLogEntry {
 	 * The command as it was executed. Doctrine saves the command as a serialized string. Using Flows persistence magic
 	 * this ensures that entities that belong to a command are correctly stored and retrieved from the database.
 	 *
-	 * @var Command
+	 * @var AbstractCommand
 	 * @ORM\Column(type="object")
 	 */
 	protected $command;
 
-	public function __construct(Command $command) {
+	/**
+	 * CommandLogEntry constructor.
+	 *
+	 * @param AbstractCommand $command
+	 */
+	public function __construct(AbstractCommand $command) {
 		$this->commandId = $command->getCommandId();
 		$this->commandType = get_class($command);
 		$this->command = $command;
@@ -68,7 +73,7 @@ class CommandLogEntry {
 	/**
 	 * Get the command itself
 	 *
-	 * @return Command
+	 * @return AbstractCommand
 	 */
 	public function getCommand() {
 		return $this->command;

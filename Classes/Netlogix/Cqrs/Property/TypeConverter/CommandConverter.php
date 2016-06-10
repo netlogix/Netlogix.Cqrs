@@ -8,42 +8,43 @@ namespace Netlogix\Cqrs\Property\TypeConverter;
 use Netlogix\Cqrs\Log\CommandLogEntry;
 use TYPO3\Flow\Annotations as Flow;
 use TYPO3\Flow\Property\PropertyMappingConfigurationInterface;
+use TYPO3\Flow\Property\TypeConverter\Error\TargetNotFoundError;
 use TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter;
 
-class CommandConverter extends PersistentObjectConverter
-{
+class CommandConverter extends PersistentObjectConverter {
 
-    /**
-     * @var string
-     */
-    protected $targetType = 'Netlogix\\Cqrs\\Command\\Command';
+	/**
+	 * @var string
+	 */
+	protected $targetType = 'Netlogix\\Cqrs\\Command\\AbstractCommand';
 
-    /**
-     * Only convert non-persistent types
-     *
-     * @param mixed $source
-     * @param string $targetType
-     * @return boolean
-     */
-    public function canConvertFrom($source, $targetType)
-    {
-        if (!is_subclass_of($targetType, $this->targetType)) {
-            return false;
-        }
-        if (is_array($source) && !isset($source['__identity'])) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * Only convert non-persistent types
+	 *
+	 * @param mixed $source
+	 * @param string $targetType
+	 * @return boolean
+	 */
+	public function canConvertFrom($source, $targetType) {
+		if (!is_subclass_of($targetType, $this->targetType)) {
+			return FALSE;
+		}
+		if (is_array($source) && !isset($source['__identity'])) {
+			return FALSE;
+		}
+		return TRUE;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function convertFrom($source, $targetType, array $convertedChildProperties = array(), PropertyMappingConfigurationInterface $configuration = null)
-    {
-        /** @var CommandLogEntry $commandLogger */
-        $commandLogger = parent::convertFrom($source, CommandLogEntry::class, $convertedChildProperties, $configuration);
-        return $commandLogger->getCommand();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), PropertyMappingConfigurationInterface $configuration = NULL) {
+		/** @var CommandLogEntry $commandLogger */
+		$commandLogger = parent::convertFrom($source, CommandLogEntry::class, $convertedChildProperties, $configuration);
+		if ($commandLogger instanceof TargetNotFoundError) {
+			return $commandLogger;
+		}
+		return $commandLogger->getCommand();
+	}
 
 }

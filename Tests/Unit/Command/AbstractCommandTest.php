@@ -5,22 +5,22 @@ namespace Netlogix\Cqrs\Tests\Unit\Command;
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use Netlogix\Cqrs\Command\Command;
+use Netlogix\Cqrs\Command\AbstractCommand;
 use Netlogix\Cqrs\Command\CommandInterface;
 use Netlogix\Cqrs\Command\CommandStatusObserverInterface;
 
 /**
  * Testcase for command
  */
-class CommandTest extends \TYPO3\Flow\Tests\UnitTestCase {
+class AbstractCommandTest extends \TYPO3\Flow\Tests\UnitTestCase {
 
 	/**
-	 * @var Command|\PHPUnit_Framework_MockObject_MockObject
+	 * @var AbstractCommand|\PHPUnit_Framework_MockObject_MockObject
 	 */
 	protected $command;
 
 	public function setUp() {
-		$this->command = $this->getMockBuilder(Command::class)->enableOriginalConstructor()->getMockForAbstractClass();
+		$this->command = $this->getMockBuilder(AbstractCommand::class)->enableOriginalConstructor()->getMockForAbstractClass();
 	}
 
 	public function testGeneratingCommandId() {
