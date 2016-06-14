@@ -35,9 +35,9 @@ class CommandCommandController extends CommandController {
 	}
 
 	/**
-	 * @param Command $command
+	 * @param AbstractCommand $command
 	 */
-	public function executeCommand(Command $command) {
+	public function executeCommand(AbstractCommand $command) {
 		$this->commandBus->delegate($command);
 	}
 

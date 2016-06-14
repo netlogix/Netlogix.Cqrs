@@ -5,7 +5,7 @@ namespace Netlogix\Cqrs\Tests\Unit\Command;
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use Netlogix\Cqrs\Command\AbstractCommand;
+use Netlogix\Cqrs\Command\Command;
 use Netlogix\Cqrs\Command\CommandBus;
 use Netlogix\Cqrs\Command\CommandHandlerInterface;
 use Netlogix\Cqrs\Command\CommandInterface;
@@ -58,7 +58,7 @@ class CommandBusTest extends \TYPO3\Flow\Tests\UnitTestCase {
 	
 	public function testCommandIsLogged() {
 		/** @var CommandInterface|\PHPUnit_Framework_MockObject_MockObject $mockCommand */
-		$mockCommand = $this->getMockBuilder(AbstractCommand::class)->getMockForAbstractClass();
+		$mockCommand = $this->getMockBuilder(Command::class)->getMockForAbstractClass();
 
 		$mockCommandHandler = $this->getMockBuilder(CommandHandlerInterface::class)->getMockForAbstractClass();
 		
