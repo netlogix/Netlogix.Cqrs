@@ -40,14 +40,27 @@ class CommandBus {
 
 	/**
 	 * @param CommandInterface $command
+	 * @throws \Exception
 	 */
 	public function delegate(CommandInterface $command) {
 		$this->initializeCommandHandlers();
-		foreach ($this->commandHandlers as $commandHandler) {
-			if ($commandHandler->canHandle($command)) {
-				$commandHandler->handle($command);
+		try {
+			foreach ($this->commandHandlers as $commandHandler) {
+				if ($commandHandler->canHandle($command)) {
+					$commandHandler->handle($command);
+				}
 			}
+		} catch (\Exception $e) {
+			$this->logCommand($command);
+			throw $e;
 		}
+		$this->logCommand($command);
+	}
+
+	/**
+	 * @param CommandInterface $command
+	 */
+	protected function logCommand(CommandInterface $command) {
 		if ($command instanceof Command) {
 			$this->commandLogger->logCommand($command);
 		}
