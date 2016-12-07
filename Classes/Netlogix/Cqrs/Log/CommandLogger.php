@@ -7,11 +7,18 @@ namespace Netlogix\Cqrs\Log;
 
 use Netlogix\Cqrs\Command\AbstractCommand;
 use TYPO3\Flow\Annotations as Flow;
+use TYPO3\Flow\Persistence\Doctrine\PersistenceManager;
 
 /**
  * @Flow\Scope("singleton")
  */
 class CommandLogger {
+
+	/**
+	 * @var PersistenceManager
+	 * @Flow\Inject
+	 */
+	protected $persistenceManager;
 
 	/**
 	 * @var CommandLogEntryRepository
@@ -27,5 +34,6 @@ class CommandLogger {
 	public function logCommand(AbstractCommand $command) {
 		$commandLogEntry = new CommandLogEntry($command);
 		$this->commandLogEntryRepository->add($commandLogEntry);
+		$this->persistenceManager->persistAll();
 	}
 }
