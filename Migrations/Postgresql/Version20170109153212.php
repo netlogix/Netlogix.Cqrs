@@ -27,8 +27,8 @@ class Version20170109153212 extends AbstractMigration
 		$this->abortIf($this->connection->getDatabasePlatform()
 				->getName() != 'postgresql', 'Migration can only be executed safely on "postgresql".');
 
-		$this->addSql('CREATE TABLE netlogix_cqrs_log_commandlogentry (commandid UUID NOT NULL, commandtype VARCHAR(255) NOT NULL, executiondateandtime TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, command TEXT NOT NULL, PRIMARY KEY(commandid))');
-		$this->addSql('COMMENT ON COLUMN netlogix_cqrs_log_commandlogentry.command IS \'(DC2Type:object)\'');
+		$this->addSql('CREATE TABLE netlogix_cqrs_log_commandlogentry (commandid UUID NOT NULL, commandtype VARCHAR(255) NOT NULL, executiondateandtime TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, command BYTEA NOT NULL, PRIMARY KEY(commandid))');
+		$this->addSql('COMMENT ON COLUMN netlogix_cqrs_log_commandlogentry.command IS \'(DC2Type:commandobject)\'');
 	}
 
 	/**
