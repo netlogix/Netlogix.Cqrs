@@ -1,0 +1,10 @@
+TYPO3:
+  Flow:
+    persistence:
+      doctrine:
+        # DBAL custom mapping types can be registered here
+        dbal:
+          mappingTypes:
+            'commandobject':
+              dbType: 'blob'
+              className: 'Netlogix\Cqrs\Doctrine\Type\CommandType'
