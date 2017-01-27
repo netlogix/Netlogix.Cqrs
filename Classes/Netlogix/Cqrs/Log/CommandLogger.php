@@ -5,9 +5,9 @@ namespace Netlogix\Cqrs\Log;
  * This file is part of the Netlogix.Cqrs package.
  */
 
+use Doctrine\Common\Persistence\ObjectManager;
 use Netlogix\Cqrs\Command\AbstractCommand;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Persistence\Doctrine\PersistenceManager;
 
 /**
  * @Flow\Scope("singleton")
@@ -15,10 +15,10 @@ use TYPO3\Flow\Persistence\Doctrine\PersistenceManager;
 class CommandLogger {
 
 	/**
-	 * @var PersistenceManager
+	 * @var ObjectManager
 	 * @Flow\Inject
 	 */
-	protected $persistenceManager;
+	protected $entityManager;
 
 	/**
 	 * @var CommandLogEntryRepository
@@ -36,6 +36,6 @@ class CommandLogger {
 		$commandLogEntry = new CommandLogEntry($command);
 		$commandLogEntry->setException($exception);
 		$this->commandLogEntryRepository->add($commandLogEntry);
-		$this->persistenceManager->persistAll();
+		$this->entityManager->flush($commandLogEntry);
 	}
 }
