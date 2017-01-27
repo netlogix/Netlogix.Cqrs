@@ -51,7 +51,7 @@ class CommandBus {
 				}
 			}
 		} catch (\Exception $e) {
-			$this->logCommand($command);
+			$this->logCommand($command, $e);
 			throw $e;
 		}
 		$this->logCommand($command);
@@ -59,10 +59,11 @@ class CommandBus {
 
 	/**
 	 * @param CommandInterface $command
+	 * @param \Exception $exception
 	 */
-	protected function logCommand(CommandInterface $command) {
+	protected function logCommand(CommandInterface $command, \Exception $exception = null) {
 		if ($command instanceof Command) {
-			$this->commandLogger->logCommand($command);
+			$this->commandLogger->logCommand($command, $exception);
 		}
 	}
 

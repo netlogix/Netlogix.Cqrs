@@ -30,9 +30,11 @@ class CommandLogger {
 	 * Log the given command
 	 *
 	 * @param AbstractCommand $command
+	 * @param \Exception $exception
 	 */
-	public function logCommand(AbstractCommand $command) {
+	public function logCommand(AbstractCommand $command, \Exception $exception = null) {
 		$commandLogEntry = new CommandLogEntry($command);
+		$commandLogEntry->setException($exception);
 		$this->commandLogEntryRepository->add($commandLogEntry);
 		$this->persistenceManager->persistAll();
 	}

@@ -8,3 +8,6 @@ TYPO3:
             'commandobject':
               dbType: 'blob'
               className: 'Netlogix\Cqrs\Doctrine\Type\CommandType'
+            'exceptionobject':
+              dbType: 'blob'
+              className: 'Netlogix\Cqrs\Doctrine\Type\CommandType'
