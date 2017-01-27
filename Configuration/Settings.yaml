@@ -5,6 +5,6 @@ TYPO3:
         # DBAL custom mapping types can be registered here
         dbal:
           mappingTypes:
-            'commandobject':
+            'objectblob':
               dbType: 'blob'
-              className: 'Netlogix\Cqrs\Doctrine\Type\CommandType'
+              className: 'Netlogix\Cqrs\Doctrine\Type\ObjectType'

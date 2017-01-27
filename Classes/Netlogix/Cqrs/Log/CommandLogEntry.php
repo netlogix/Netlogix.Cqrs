@@ -32,13 +32,24 @@ class CommandLogEntry {
 	protected $executionDateAndTime;
 
 	/**
+	 * @var integer
+	 */
+	protected $status;
+
+	/**
 	 * The command as it was executed. Doctrine saves the command as a serialized string. Using Flows persistence magic
 	 * this ensures that entities that belong to a command are correctly stored and retrieved from the database.
 	 *
 	 * @var AbstractCommand
-	 * @ORM\Column(type="commandobject")
+	 * @ORM\Column(type="objectblob")
 	 */
 	protected $command;
+
+	/**
+	 * @var \Exception
+	 * @ORM\Column(type="objectblob")
+	 */
+	protected $exception = null;
 
 	/**
 	 * CommandLogEntry constructor.
@@ -50,6 +61,7 @@ class CommandLogEntry {
 		$this->commandType = get_class($command);
 		$this->command = $command;
 		$this->executionDateAndTime = new \DateTime();
+		$this->status = $command->getStatus();
 	}
 
 	/**
@@ -85,4 +97,26 @@ class CommandLogEntry {
 	public function getExecutionDateAndTime() {
 		return $this->executionDateAndTime;
 	}
+
+	/**
+	 * @return integer
+	 */
+	public function getStatus() {
+		return $this->status;
+	}
+
+	/**
+	 * @return \Exception
+	 */
+	public function getException() {
+		return $this->exception;
+	}
+
+	/**
+	 * @param \Exception $exception
+	 */
+	public function setException($exception) {
+		$this->exception = $exception;
+	}
+
 }

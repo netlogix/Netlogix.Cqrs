@@ -10,18 +10,18 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
- * A data type that encodes command objects for the database. In contrast to doctrines object type this uses
+ * A data type that encodes objects for the database. In contrast to doctrines object type this uses
  * a BLOB column in the database. This has the advantage on Postgresql to support NULL bytes which happen to
  * occur in php serialized objects.
  *
  * @Flow\Proxy(false)
  */
-class CommandType extends \Doctrine\DBAL\Types\ObjectType
+class ObjectType extends \Doctrine\DBAL\Types\ObjectType
 {
 	/**
 	 * @var string
 	 */
-	const COMMANDOBJECT = 'commandobject';
+	const OBJECTBLOB = 'objectblob';
 
 	/**
 	 * Gets the name of this type.
@@ -30,7 +30,7 @@ class CommandType extends \Doctrine\DBAL\Types\ObjectType
 	 */
 	public function getName()
 	{
-		return self::COMMANDOBJECT;
+		return self::OBJECTBLOB;
 	}
 
 	/**
