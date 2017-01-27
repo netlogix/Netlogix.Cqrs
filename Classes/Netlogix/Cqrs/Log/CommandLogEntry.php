@@ -41,13 +41,13 @@ class CommandLogEntry {
 	 * this ensures that entities that belong to a command are correctly stored and retrieved from the database.
 	 *
 	 * @var AbstractCommand
-	 * @ORM\Column(type="commandobject")
+	 * @ORM\Column(type="objectblob")
 	 */
 	protected $command;
 
 	/**
 	 * @var \Exception
-	 * @ORM\Column(type="exceptionobject")
+	 * @ORM\Column(type="objectblob")
 	 */
 	protected $exception = null;
 
