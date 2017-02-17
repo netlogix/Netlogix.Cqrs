@@ -47,7 +47,7 @@ class CommandLogEntry {
 
 	/**
 	 * @var \Exception
-	 * @ORM\Column(type="objectblob")
+	 * @ORM\Column(type="objectblob",nullable=true)
 	 */
 	protected $exception = null;
 
