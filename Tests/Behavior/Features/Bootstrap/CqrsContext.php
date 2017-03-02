@@ -103,6 +103,17 @@ class CqrsContext extends FlowContext {
 	}
 
 	/**
+	 * @Given /^I have a "([^"]*)" command$/
+	 * @var string $commandName
+	 * @throws \Exception
+	 */
+	public function iHaveACommand($commandName)
+	{
+		$commandClass = $this->resolveClassName($commandName, 'Domain\\Command\\', 'Command');
+		$this->commands[] = new $commandClass;
+	}
+
+	/**
 	 * @Given /^I have a "([^"]*)" with values$/
 	 * @param string $class
 	 * @param TableNode $values
