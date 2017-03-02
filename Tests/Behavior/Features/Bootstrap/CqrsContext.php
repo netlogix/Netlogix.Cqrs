@@ -82,6 +82,15 @@ class CqrsContext extends FlowContext {
 	}
 
 	/**
+	 * Get the name of the package containing the currently executed feature file.
+	 *
+	 * @return string
+	 */
+	public function getFeaturePackageName() {
+		return $this->package;
+	}
+
+	/**
 	 * @Given /^I have a "([^"]*)" command with parameters$/
 	 * @var string $commandName
 	 * @var TableNode $parameters
