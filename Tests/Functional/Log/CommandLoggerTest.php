@@ -6,26 +6,50 @@ namespace Netlogix\Cqrs\Tests\Functional\Log;
  */
 
 use Doctrine\ORM\EntityNotFoundException;
+use Netlogix\Cqrs\Command\CommandBus;
+use Netlogix\Cqrs\Command\DefaultCommandHandler;
 use Netlogix\Cqrs\Log\CommandLogEntry;
 use Netlogix\Cqrs\Log\CommandLogger;
 use Netlogix\Cqrs\Tests\Functional\Fixtures\EntityContainingTestCommand;
+use Netlogix\Cqrs\Tests\Functional\Fixtures\SimpleFailingTestCommand;
 use Netlogix\Cqrs\Tests\Functional\Fixtures\SimpleTestCommand;
 use Netlogix\Cqrs\Tests\Functional\Fixtures\TestEntity;
 
 class CommandLoggerTest extends \TYPO3\Flow\Tests\FunctionalTestCase {
 
 	protected static $testablePersistenceEnabled = true;
-	
+
 	public function testCommandLogsAreStoredInDatabase() {
 		$command = new SimpleTestCommand('9a395a80-fcfa-4029-bb3c-5bb23106a9ac');
 
 		$commandLogger = $this->objectManager->get(CommandLogger::class);
 		$commandLogger->logCommand($command);
-		
+
 		$this->persistenceManager->persistAll();
-		
+
 		$persistedLogEntry = $this->persistenceManager->getObjectByIdentifier('9a395a80-fcfa-4029-bb3c-5bb23106a9ac', CommandLogEntry::class);
 		$this->assertNotNull($persistedLogEntry);
+	}
+
+	public function testFailingCommandLogsAreStoredInDatabase() {
+		$command = new SimpleFailingTestCommand('1c8ed4a9-78ee-489f-813d-42a9d3542e63');
+
+		$commandHandler = new DefaultCommandHandler();
+		$commandLogger = $this->objectManager->get(CommandLogger::class);
+
+		$commandBus = new CommandBus();
+		$this->inject($commandBus, 'commandHandlers', array($commandHandler));
+		$this->inject($commandBus, 'commandLogger', $commandLogger);
+
+		try {
+			$commandBus->delegate($command);
+		} catch (\InvalidArgumentException $e) {
+		}
+
+		$persistedLogEntry = $this->persistenceManager->getObjectByIdentifier('1c8ed4a9-78ee-489f-813d-42a9d3542e63', CommandLogEntry::class);
+		$this->assertNotNull($persistedLogEntry);
+		$this->assertNotNull($persistedLogEntry->getException());
+		$this->assertEquals('Foo', $persistedLogEntry->getException()->getMessage());
 	}
 
 	public function testSimpleCommandIsRestoredOnLogEntryRetrieval() {
@@ -73,7 +97,7 @@ class CommandLoggerTest extends \TYPO3\Flow\Tests\FunctionalTestCase {
 
 		/** @var CommandLogEntry $persistedLogEntry */
 		$persistedLogEntry = $this->persistenceManager->getObjectByIdentifier('728b3930-2deb-44ef-92e9-8899dd02c775', CommandLogEntry::class);
-		
+
 		// FIXME find a cleaner way to check if the log entry can be loaded
 		try {
 			$persistedLogEntry->getCommand()->getEntity()->getFoo();
