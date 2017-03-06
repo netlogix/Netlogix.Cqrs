@@ -46,7 +46,7 @@ class CommandLogEntry {
 	protected $command;
 
 	/**
-	 * @var \Exception
+	 * @var ExceptionData
 	 * @ORM\Column(type="objectblob",nullable=true)
 	 */
 	protected $exception = null;
@@ -106,14 +106,14 @@ class CommandLogEntry {
 	}
 
 	/**
-	 * @return \Exception
+	 * @return ExceptionData
 	 */
 	public function getException() {
 		return $this->exception;
 	}
 
 	/**
-	 * @param \Exception $exception
+	 * @param ExceptionData $exception
 	 */
 	public function setException($exception) {
 		$this->exception = $exception;
