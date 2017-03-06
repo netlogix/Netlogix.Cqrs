@@ -21,6 +21,12 @@ class CommandLogger
 	protected $commandLogEntryRepository;
 
 	/**
+	 * @var \Doctrine\Common\Persistence\ObjectManager
+	 * @Flow\Inject
+	 */
+	protected $entityManager;
+
+	/**
 	 * Log the given command
 	 *
 	 * @param AbstractCommand $command
@@ -30,9 +36,14 @@ class CommandLogger
 	{
 		$commandLogEntry = new CommandLogEntry($command);
 		if ($exception !== null) {
-			$commandLogEntry->setException($exception);
+			$commandLogEntry->setException(new ExceptionData($exception));
 		}
 		$this->commandLogEntryRepository->add($commandLogEntry);
+		if ($exception !== null) {
+			if ($this->entityManager instanceof \Doctrine\ORM\EntityManager) {
+				$this->entityManager->flush($commandLogEntry);
+			}
+		}
 	}
 
 }
