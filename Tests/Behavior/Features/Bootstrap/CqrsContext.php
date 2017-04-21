@@ -1,21 +1,17 @@
 <?php
 namespace Netlogix\Cqrs\Tests\Behavior;
 
-use Behat\Behat\Context\BehatContext;
 use Behat\Behat\Event\ScenarioEvent;
-use Behat\Behat\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Flowpack\Behat\Tests\Behat\FlowContext;
+use Netlogix\BehatCommons\ClassNameResolver;
+use Netlogix\BehatCommons\ObjectFactory;
 use Netlogix\Cqrs\Command\CommandBus;
-use Netlogix\Cqrs\Command\CommandInterface;
+use TYPO3\Flow\Persistence\PersistenceManagerInterface;
+use TYPO3\Flow\Reflection\ObjectAccess;
 use TYPO3\Flow\Resource\ResourceManager;
-use TYPO3\Flow\Utility\Arrays;
-use PHPUnit_Framework_Assert as Assert;
 use TYPO3\Flow\Property\PropertyMapper;
-use TYPO3\Flow\Property\PropertyMappingConfiguration;
-use TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter;
 
 require_once(__DIR__ . '/../../../../../Flowpack.Behat/Tests/Behat/FlowContext.php');
 
@@ -30,14 +26,24 @@ class CqrsContext extends FlowContext {
 	protected $package;
 
 	/**
-	 * @var CommandInterface
+	 * @var array<CommandInterface>
 	 */
-	protected $command;
+	protected $commands = [];
 
 	/**
 	 * @var CommandBus
 	 */
 	protected $commandBus;
+
+	/**
+	 * @var ObjectFactory
+	 */
+	protected $objectFactory;
+
+	/**
+	 * @var ClassNameResolver
+	 */
+	protected $classNameResolver;
 
 	/**
 	 * Initializes the context
@@ -48,6 +54,8 @@ class CqrsContext extends FlowContext {
 		parent::__construct($parameters);
 
 		$this->commandBus = $this->objectManager->get(CommandBus::class);
+		$this->objectFactory = $this->objectManager->get(ObjectFactory::class);
+		$this->classNameResolver = $this->objectManager->get(ClassNameResolver::class);
 	}
 
 	/**
@@ -59,6 +67,18 @@ class CqrsContext extends FlowContext {
 		if (preg_match('~Packages/[^/]+/([^/]+)/Tests/Behavior/~', $featureFile, $matches) === 1) {
 			$this->package = $matches[1];
 		}
+		$this->commands = [];
+	}
+
+	/**
+	 * @AfterScenario
+	 * @param ScenarioEvent $event
+	 * @throws \Exception
+	 */
+	public function afterScenario(ScenarioEvent $event) {
+		if ($this->commands) {
+			throw new \Exception('There are still ' . count($this->commands) . ' not executed.');
+		}
 	}
 
 	/**
@@ -69,59 +89,40 @@ class CqrsContext extends FlowContext {
 	 */
 	public function iHaveACommandWithParameters($commandName, TableNode $parameters)
 	{
-		$propertyMappingConfiguration = new PropertyMappingConfiguration();
-		$propertyMappingConfiguration->allowAllProperties();
-		$propertyMappingConfiguration->setTypeConverterOption(PersistentObjectConverter::class, PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, true);
-		$propertyMapper = $this->objectManager->get(PropertyMapper::class);
-
 		$commandClass = $this->resolveClassName($commandName, 'Domain\\Command\\', 'Command');
-		$this->command = $propertyMapper->convert($parameters->getRowsHash(), $commandClass, $propertyMappingConfiguration);
+		$this->commands[] = $this->objectFactory->create($parameters->getRowsHash(), $commandClass, $this->objectManager->get(PropertyMapper::class));
 	}
 
 	/**
 	 * @Given /^I have a "([^"]*)" with values$/
 	 * @param string $class
 	 * @param TableNode $values
+	 * @throws \Exception
 	 */
 	public function iHaveAEntityWithValues($class, TableNode $values) {
-		$propertyMappingConfiguration = new \TYPO3\Flow\Property\PropertyMappingConfiguration();
-		$propertyMappingConfiguration->allowAllProperties();
-		$propertyMappingConfiguration->forProperty('*')->allowAllProperties();
-		$propertyMappingConfiguration->setTypeConverterOption('TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter', \TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter::CONFIGURATION_CREATION_ALLOWED, TRUE);
-		/** @var \TYPO3\Flow\Property\PropertyMapper $propertyMapper */
-		$propertyMapper = $this->objectManager->get('TYPO3\Flow\Property\PropertyMapper');
+
+		/** @var PropertyMapper $propertyMapper */
+		$propertyMapper = $this->objectManager->get(PropertyMapper::class);
+
+		$entityClass = $this->resolveClassName($class, 'Domain\\Model\\');
+
 		$row = $values->getRowsHash();
 		$identifier = '';
 		if (isset($row['persistence_object_identifier'])) {
 			$identifier = $row['persistence_object_identifier'];
 			unset($row['persistence_object_identifier']);
 		}
-		// Handle dot notation
-		foreach ($row as $key => $value) {
-			if (strpos($key, '.') !== FALSE) {
-				$keyParts = explode('.', $key);
-				$currentPosition = &$row;
-				foreach ($keyParts as $keyPart) {
-					if (!array_key_exists($keyPart, $currentPosition)) {
-						$currentPosition[$keyPart] = array();
-					}
-					$currentPosition = &$currentPosition[$keyPart];
-				}
-				$currentPosition = $value;
-				unset($row[$key]);
-			}
-		}
 
-		$entityClass = $this->resolveClassName($class, 'Domain\\Model\\');
+		$entity = $this->objectFactory->create($row, $entityClass, $propertyMapper);
 
-		$entity = $propertyMapper->convert($row, $entityClass, $propertyMappingConfiguration);
 		if ($propertyMapper->getMessages()->hasErrors()) {
 			throw new \Exception('Error while mapping entity: ' . print_r($propertyMapper->getMessages(), TRUE));
 		}
 		if ($identifier) {
-			\TYPO3\Flow\Reflection\ObjectAccess::setProperty($entity, 'Persistence_Object_Identifier', $identifier, TRUE);
+			ObjectAccess::setProperty($entity, 'Persistence_Object_Identifier', $identifier, TRUE);
 		}
-		$this->objectManager->get(\TYPO3\Flow\Persistence\PersistenceManagerInterface::class)->add($entity);
+
+		$this->objectManager->get(PersistenceManagerInterface::class)->add($entity);
 		$this->persistAll();
 	}
 
@@ -136,12 +137,34 @@ class CqrsContext extends FlowContext {
 		$this->persistAll();
 	}
 
+	/**
+	 * @When /^I execute the commands$/
+	 */
+	public function iExecuteTheCommand() {
+		while ($command = array_shift($this->commands)) {
+			$this->commandBus->delegate($command);
+		}
+		$this->persistAll();
+	}
+
+	/**
+	 * @When /^I execute the (first|next|last) command$/
+	 */
+	public function iExecuteTheFirstNextOrLastCommand() {
+		$command = array_shift($this->commands);
+		$this->commandBus->delegate($command);
+		$this->persistAll();
+	}
 
 	/**
 	 * @When /^I execute the command$/
 	 */
-	public function iExecuteTheCommand() {
-		$this->commandBus->delegate($this->command);
+	public function iExecuteTheNextCommand() {
+		$command = array_shift($this->commands);
+		if ($this->commands) {
+			throw new \Exception('There are still ' . count($this->commands) . ' commands to be executed. Call them by "first", "next" or "last"');
+		}
+		$this->commandBus->delegate($command);
 		$this->persistAll();
 	}
 
@@ -186,14 +209,10 @@ class CqrsContext extends FlowContext {
 	 * @param string $prefix
 	 * @param string $suffix
 	 * @return string
+	 * @throws \Exception
 	 */
 	protected function resolveClassName($className, $prefix = '', $suffix = '') {
-		foreach ([$className, str_replace('.', '\\', $this->package) . '\\' . $prefix . $className . $suffix] as $possibleClassName) {
-			if (class_exists($possibleClassName)) {
-				return $possibleClassName;
-			}
-		}
-		throw new \Exception('Could not find class "' . $prefix . $className . $suffix . '"');
+		return $this->classNameResolver->resolveClassName($this->package, $className, $prefix, $suffix);
 	}
 
 	/**
