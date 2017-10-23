@@ -7,7 +7,7 @@ namespace Netlogix\Cqrs\Doctrine\Type;
  */
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use TYPO3\Flow\Annotations as Flow;
+use Neos\Flow\Annotations as Flow;
 
 /**
  * A data type that encodes objects for the database. In contrast to doctrines object type this uses

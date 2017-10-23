@@ -8,10 +8,10 @@ use Flowpack\Behat\Tests\Behat\FlowContext;
 use Netlogix\BehatCommons\ClassNameResolver;
 use Netlogix\BehatCommons\ObjectFactory;
 use Netlogix\Cqrs\Command\CommandBus;
-use TYPO3\Flow\Persistence\PersistenceManagerInterface;
-use TYPO3\Flow\Reflection\ObjectAccess;
-use TYPO3\Flow\Resource\ResourceManager;
-use TYPO3\Flow\Property\PropertyMapper;
+use Neos\Flow\Persistence\PersistenceManagerInterface;
+use Neos\Utility\ObjectAccess;
+use Neos\Flow\ResourceManagement\ResourceManager;
+use Neos\Flow\Property\PropertyMapper;
 
 require_once(__DIR__ . '/../../../../../Flowpack.Behat/Tests/Behat/FlowContext.php');
 

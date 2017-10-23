@@ -10,7 +10,7 @@ use Netlogix\Cqrs\Command\CommandInterface;
 use Netlogix\Cqrs\Command\DefaultCommandHandler;
 use Netlogix\Cqrs\Command\SynchronousCommandInterface;
 
-class DefaultCommandHandlerTest extends \TYPO3\Flow\Tests\UnitTestCase {
+class DefaultCommandHandlerTest extends \Neos\Flow\Tests\UnitTestCase {
 
 	public function testAHandledCommandIsExecuted() {
 		$mockCommand = $this->getMockBuilder(SynchronousCommandInterface::class)->getMockForAbstractClass();

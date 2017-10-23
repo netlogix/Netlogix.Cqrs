@@ -15,7 +15,7 @@ use Netlogix\Cqrs\Tests\Functional\Fixtures\SimpleFailingTestCommand;
 use Netlogix\Cqrs\Tests\Functional\Fixtures\SimpleTestCommand;
 use Netlogix\Cqrs\Tests\Functional\Fixtures\TestEntity;
 
-class CommandLoggerTest extends \TYPO3\Flow\Tests\FunctionalTestCase {
+class CommandLoggerTest extends \Neos\Flow\Tests\FunctionalTestCase {
 
 	protected static $testablePersistenceEnabled = true;
 

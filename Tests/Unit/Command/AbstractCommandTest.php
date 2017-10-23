@@ -12,7 +12,7 @@ use Netlogix\Cqrs\Command\CommandStatusObserverInterface;
 /**
  * Testcase for command
  */
-class AbstractCommandTest extends \TYPO3\Flow\Tests\UnitTestCase {
+class AbstractCommandTest extends \Neos\Flow\Tests\UnitTestCase {
 
 	/**
 	 * @var AbstractCommand|\PHPUnit_Framework_MockObject_MockObject

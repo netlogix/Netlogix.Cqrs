@@ -1,10 +1,10 @@
-TYPO3:
+
+Neos:
   Flow:
     persistence:
       doctrine:
-        # DBAL custom mapping types can be registered here
         dbal:
           mappingTypes:
-            'objectblob':
-              dbType: 'blob'
-              className: 'Netlogix\Cqrs\Doctrine\Type\ObjectType'
+            objectblob:
+              dbType: blob
+              className: Netlogix\Cqrs\Doctrine\Type\ObjectType
