@@ -10,10 +10,10 @@ use Netlogix\Cqrs\Command\CommandBus;
 use Netlogix\Cqrs\Command\CommandHandlerInterface;
 use Netlogix\Cqrs\Command\CommandInterface;
 use Netlogix\Cqrs\Log\CommandLogger;
-use TYPO3\Flow\Object\ObjectManagerInterface;
-use TYPO3\Flow\Reflection\ReflectionService;
+use Neos\Flow\ObjectManagement\ObjectManagerInterface;
+use Neos\Flow\Reflection\ReflectionService;
 
-class CommandBusTest extends \TYPO3\Flow\Tests\UnitTestCase {
+class CommandBusTest extends \Neos\Flow\Tests\UnitTestCase {
 
 
 	public function testCommandIsDelegatedToAllCommandHandlersWhichCanHandleTheCommand() {

@@ -8,7 +8,7 @@ namespace Netlogix\Cqrs\Tests\Unit\Log;
 use Netlogix\Cqrs\Command\AbstractCommand;
 use Netlogix\Cqrs\Log\CommandLogEntry;
 
-class CommandLogEntryTest extends \TYPO3\Flow\Tests\UnitTestCase {
+class CommandLogEntryTest extends \Neos\Flow\Tests\UnitTestCase {
 
 	public function testCommandIdIsCopiedToLogEntry() {
 		/** @var AbstractCommand|\PHPUnit_Framework_MockObject_MockObject $mockCommand */

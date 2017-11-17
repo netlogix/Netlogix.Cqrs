@@ -5,8 +5,8 @@ namespace Netlogix\Cqrs\Command;
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use TYPO3\Flow\Error\Result;
-use TYPO3\Flow\Utility\Algorithms;
+use Neos\Error\Messages\Result;
+use Neos\Flow\Utility\Algorithms;
 
 /**
  * Abstract command

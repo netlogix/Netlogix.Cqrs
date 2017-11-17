@@ -2,9 +2,9 @@
 namespace Netlogix\Cqrs\Validation\Validator;
 
 use Netlogix\Cqrs\Command\AbstractCommand;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Validation\Exception\InvalidValidationOptionsException;
-use TYPO3\Flow\Validation\Validator\AbstractValidator;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Validation\Exception\InvalidValidationOptionsException;
+use Neos\Flow\Validation\Validator\AbstractValidator;
 
 /**
  * @Flow\Scope("singleton")
@@ -24,7 +24,7 @@ class CommandValidator extends AbstractValidator
         }
 
         foreach ($value->getValidationResult()->getFlattenedErrors() as $key => $validationResult) {
-            /** @var \TYPO3\Flow\Validation\Error $error */
+            /** @var \Neos\Flow\Validation\Error $error */
             foreach ($validationResult as $error) {
                 $this->result->forProperty($key)->addError($error);
             }

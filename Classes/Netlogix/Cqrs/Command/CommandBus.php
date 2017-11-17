@@ -6,9 +6,9 @@ namespace Netlogix\Cqrs\Command;
  */
 
 use Netlogix\Cqrs\Log\CommandLogger;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Object\ObjectManagerInterface;
-use TYPO3\Flow\Reflection\ReflectionService;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\ObjectManagement\ObjectManagerInterface;
+use Neos\Flow\Reflection\ReflectionService;
 
 /**
  * The command bus accepts commands and delegates execution of given commands

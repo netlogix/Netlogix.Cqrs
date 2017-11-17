@@ -6,10 +6,10 @@ namespace Netlogix\Cqrs\Property\TypeConverter;
  */
 
 use Netlogix\Cqrs\Log\CommandLogEntry;
-use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Property\PropertyMappingConfigurationInterface;
-use TYPO3\Flow\Property\TypeConverter\Error\TargetNotFoundError;
-use TYPO3\Flow\Property\TypeConverter\PersistentObjectConverter;
+use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Property\PropertyMappingConfigurationInterface;
+use Neos\Flow\Property\TypeConverter\Error\TargetNotFoundError;
+use Neos\Flow\Property\TypeConverter\PersistentObjectConverter;
 
 class CommandConverter extends PersistentObjectConverter {
 
