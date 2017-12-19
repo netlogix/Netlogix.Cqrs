@@ -62,7 +62,7 @@ class CommandBus {
 	 * @param \Exception $exception
 	 */
 	protected function logCommand(CommandInterface $command, \Exception $exception = null) {
-		if ($command instanceof Command) {
+		if ($command instanceof AbstractCommand) {
 			$this->commandLogger->logCommand($command, $exception);
 		}
 	}
