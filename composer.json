@@ -1,15 +1,24 @@
 {
     "name": "netlogix/cqrs",
     "type": "neos-package",
-    "description": "Add description here",
+    "homepage": "http://websolutions.netlogix.de/",
+    "license": ["MIT"],
     "require": {
-        "neos/flow": "~4.0.0",
+        "neos/flow": "*",
         "netlogix/behatcommons": "*"
     },
     "autoload": {
         "psr-0": {
             "Netlogix\\Cqrs": "Classes"
         }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "Netlogix\\Cqrs\\Tests": "Tests"
+        }
+    },
+    "replace": {
+        "netlogix/cqrs": "self.version"
     },
     "extra": {
         "applied-flow-migrations": [
