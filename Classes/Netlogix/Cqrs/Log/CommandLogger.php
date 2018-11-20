@@ -34,9 +34,20 @@ class CommandLogger
 	 */
 	public function logCommand(AbstractCommand $command, \Exception $exception = null)
 	{
-		$commandLogEntry = $this->commandLogEntryRepository->findOneByCommand($command) ?? new CommandLogEntry($command);
+		$commandLogEntry = $this->commandLogEntryRepository->findOneByCommand($command);
+		$isNewObject = !$commandLogEntry;
+
+		if ($isNewObject) {
+			$commandLogEntry = new CommandLogEntry($command);
+		}
+
 		$commandLogEntry->setException($exception === null ? null : new ExceptionData($exception));
-		$this->commandLogEntryRepository->addOrUpdate($commandLogEntry);
+
+		if ($isNewObject) {
+			$this->commandLogEntryRepository->add($commandLogEntry);
+		} else {
+			$this->commandLogEntryRepository->update($commandLogEntry);
+		}
 		$this->entityManager->flush($commandLogEntry);
 	}
 

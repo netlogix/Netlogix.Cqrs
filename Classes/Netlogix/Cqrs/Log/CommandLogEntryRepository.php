@@ -22,21 +22,6 @@ class CommandLogEntryRepository extends Repository
 	const ENTITY_CLASSNAME = CommandLogEntry::class;
 
 	/**
-	 * @param CommandLogEntry $entry
-	 * @throws IllegalObjectTypeException
-	 * @see Repository::add()
-	 * @see Repository::update()
-	 */
-	public function addOrUpdate(CommandLogEntry $entry)
-	{
-		if ($this->persistenceManager->isNewObject($entry)) {
-			return $this->add($entry);
-		} else {
-			return $this->update($entry);
-		}
-	}
-
-	/**
 	 * @param AbstractCommand $command
 	 * @return CommandLogEntry|null
 	 */
@@ -51,5 +36,4 @@ class CommandLogEntryRepository extends Repository
 			->execute()
 			->getFirst();
 	}
-
 }
