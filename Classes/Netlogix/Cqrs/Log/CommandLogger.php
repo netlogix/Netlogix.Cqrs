@@ -1,19 +1,19 @@
 <?php
+
 namespace Netlogix\Cqrs\Log;
 
 /*
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use Netlogix\Cqrs\Command\AbstractCommand;
 use Neos\Flow\Annotations as Flow;
+use Netlogix\Cqrs\Command\AbstractCommand;
 
 /**
  * @Flow\Scope("singleton")
  */
 class CommandLogger
 {
-
 	/**
 	 * @var CommandLogEntryRepository
 	 * @Flow\Inject
@@ -34,16 +34,21 @@ class CommandLogger
 	 */
 	public function logCommand(AbstractCommand $command, \Exception $exception = null)
 	{
-		$commandLogEntry = new CommandLogEntry($command);
-		if ($exception !== null) {
-			$commandLogEntry->setException(new ExceptionData($exception));
+		$commandLogEntry = $this->commandLogEntryRepository->findOneByCommand($command);
+		$isNewObject = !$commandLogEntry;
+
+		if ($isNewObject) {
+			$commandLogEntry = new CommandLogEntry($command);
 		}
-		$this->commandLogEntryRepository->add($commandLogEntry);
-		if ($exception !== null) {
-			if ($this->entityManager instanceof \Doctrine\ORM\EntityManager) {
-				$this->entityManager->flush($commandLogEntry);
-			}
+
+		$commandLogEntry->setException($exception === null ? null : new ExceptionData($exception));
+
+		if ($isNewObject) {
+			$this->commandLogEntryRepository->add($commandLogEntry);
+		} else {
+			$this->commandLogEntryRepository->update($commandLogEntry);
 		}
+		$this->entityManager->flush($commandLogEntry);
 	}
 
 }

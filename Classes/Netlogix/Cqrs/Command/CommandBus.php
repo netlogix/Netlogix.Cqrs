@@ -45,16 +45,17 @@ class CommandBus {
 	public function delegate(CommandInterface $command) {
 		$this->initializeCommandHandlers();
 		try {
+			$this->logCommand($command);
 			foreach ($this->commandHandlers as $commandHandler) {
 				if ($commandHandler->canHandle($command)) {
 					$commandHandler->handle($command);
 				}
 			}
+			$this->logCommand($command);
 		} catch (\Exception $e) {
 			$this->logCommand($command, $e);
 			throw $e;
 		}
-		$this->logCommand($command);
 	}
 
 	/**

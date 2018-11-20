@@ -57,8 +57,8 @@ class CommandLogEntry {
 	 * @param AbstractCommand $command
 	 */
 	public function __construct(AbstractCommand $command) {
+		$this->commandType = $command->getCommandType();
 		$this->commandId = $command->getCommandId();
-		$this->commandType = get_class($command);
 		$this->command = $command;
 		$this->executionDateAndTime = new \DateTime();
 		$this->status = $command->getStatus();

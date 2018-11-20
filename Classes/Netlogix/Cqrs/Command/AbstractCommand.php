@@ -49,6 +49,13 @@ abstract class AbstractCommand implements CommandInterface{
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getCommandType() {
+		return get_class($this);
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getStatus() {

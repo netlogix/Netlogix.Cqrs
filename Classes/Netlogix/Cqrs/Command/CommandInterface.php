@@ -1,4 +1,5 @@
 <?php
+
 namespace Netlogix\Cqrs\Command;
 
 /*
@@ -8,8 +9,8 @@ namespace Netlogix\Cqrs\Command;
 /**
  * Interface CommandInterface
  */
-interface CommandInterface {
-
+interface CommandInterface
+{
 	const STATUS_PENDING = 1;
 	const STATUS_REJECTED = 2;
 	const STATUS_SUCCESS = 3;
@@ -31,4 +32,10 @@ interface CommandInterface {
 	 */
 	public function attachStatusObserver(CommandStatusObserverInterface $observer);
 
+	/**
+	 * Executes the command.
+	 *
+	 * @return void
+	 */
+	public function execute();
 }
