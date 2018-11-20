@@ -1,4 +1,5 @@
 <?php
+
 namespace Netlogix\Cqrs\Command;
 
 /*
@@ -8,13 +9,7 @@ namespace Netlogix\Cqrs\Command;
 /**
  * Interface CommandInterface
  */
-interface SynchronousCommandInterface extends CommandInterface{
-
-	/**
-	 * Executes the command.
-	 *
-	 * @return void
-	 */
-	public function execute();
+interface SynchronousCommandInterface extends CommandInterface
+{
 
 }
