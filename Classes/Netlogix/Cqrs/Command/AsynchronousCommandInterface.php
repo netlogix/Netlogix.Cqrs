@@ -8,6 +8,7 @@ namespace Netlogix\Cqrs\Command;
 /**
  * Asynchronous commands
  */
-interface AsynchronousCommandInterface extends CommandInterface{
+interface AsynchronousCommandInterface extends CommandInterface
+{
 
 }

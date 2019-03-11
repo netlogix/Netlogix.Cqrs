@@ -8,14 +8,15 @@ namespace Netlogix\Cqrs\Command;
 /**
  * Interface CommandStatusObserverInterface
  */
-interface CommandStatusObserverInterface {
+interface CommandStatusObserverInterface
+{
 
-	/**
-	 * This method is called on status update.
-	 *
-	 * @param CommandInterface $command
-	 * @param int $oldStatus
-	 * @return void
-	 */
-	public function update(CommandInterface $command, $oldStatus);
+    /**
+     * This method is called on status update.
+     *
+     * @param CommandInterface $command
+     * @param int $oldStatus
+     * @return void
+     */
+    public function update(CommandInterface $command, $oldStatus);
 }
