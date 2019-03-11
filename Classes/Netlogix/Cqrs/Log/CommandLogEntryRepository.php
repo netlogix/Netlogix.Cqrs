@@ -7,7 +7,6 @@ namespace Netlogix\Cqrs\Log;
  */
 
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use Neos\Flow\Persistence\Repository;
 use Netlogix\Cqrs\Command\AbstractCommand;
 
@@ -16,24 +15,24 @@ use Netlogix\Cqrs\Command\AbstractCommand;
  */
 class CommandLogEntryRepository extends Repository
 {
-	/**
-	 * @var string
-	 */
-	const ENTITY_CLASSNAME = CommandLogEntry::class;
+    /**
+     * @var string
+     */
+    const ENTITY_CLASSNAME = CommandLogEntry::class;
 
-	/**
-	 * @param AbstractCommand $command
-	 * @return CommandLogEntry|null
-	 */
-	public function findOneByCommand(AbstractCommand $command)
-	{
-		$query = $this->createQuery();
-		return $query
-			->matching($query->logicalAnd(
-				$query->equals('commandType', $command->getCommandType()),
-				$query->equals('commandId', $command->getCommandId())
-			))
-			->execute()
-			->getFirst();
-	}
+    /**
+     * @param AbstractCommand $command
+     * @return CommandLogEntry|null
+     */
+    public function findOneByCommand(AbstractCommand $command)
+    {
+        $query = $this->createQuery();
+        return $query
+            ->matching($query->logicalAnd(
+                $query->equals('commandType', $command->getCommandType()),
+                $query->equals('commandId', $command->getCommandId())
+            ))
+            ->execute()
+            ->getFirst();
+    }
 }

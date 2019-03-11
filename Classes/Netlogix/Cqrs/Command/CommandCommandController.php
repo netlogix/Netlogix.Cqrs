@@ -13,33 +13,36 @@ use Neos\Flow\Cli\CommandController;
  *
  * @Flow\Scope("singleton")
  */
-class CommandCommandController extends CommandController {
+class CommandCommandController extends CommandController
+{
 
-	/**
-	 * @var CommandBus
-	 * @Flow\Inject
-	 */
-	protected $commandBus;
+    /**
+     * @var CommandBus
+     * @Flow\Inject
+     */
+    protected $commandBus;
 
-	protected function mapRequestArgumentsToControllerArguments() {
-		$commandClass = $this->request->getArgument('command');
-		$commandArgument = $this->arguments->getArgument('command');
-		$commandArgument->setDataType($commandClass);
-		$commandArgument->getPropertyMappingConfiguration()->allowAllProperties();
-		$commandArguments = array();
-		foreach ($this->request->getExceedingArguments() as $exceedingArgument) {
-			list($name, $value) = explode(':', $exceedingArgument, 2);
-			$commandArguments[$name] = $value;
-		}
-		$commandArgument->setValue($commandArguments);
-	}
+    protected function mapRequestArgumentsToControllerArguments()
+    {
+        $commandClass = $this->request->getArgument('command');
+        $commandArgument = $this->arguments->getArgument('command');
+        $commandArgument->setDataType($commandClass);
+        $commandArgument->getPropertyMappingConfiguration()->allowAllProperties();
+        $commandArguments = array();
+        foreach ($this->request->getExceedingArguments() as $exceedingArgument) {
+            list($name, $value) = explode(':', $exceedingArgument, 2);
+            $commandArguments[$name] = $value;
+        }
+        $commandArgument->setValue($commandArguments);
+    }
 
-	/**
-	 * @param AbstractCommand $command
-	 */
-	public function executeCommand(AbstractCommand $command) {
-		$this->commandBus->delegate($command);
-	}
+    /**
+     * @param AbstractCommand $command
+     */
+    public function executeCommand(AbstractCommand $command)
+    {
+        $this->commandBus->delegate($command);
+    }
 
 
 }

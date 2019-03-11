@@ -10,6 +10,7 @@ use Neos\Flow\Exception;
 /**
  * An exception to indicate that a command was not yet executed and results are not available.
  */
-class CommandNotExecutedException extends Exception {
+class CommandNotExecutedException extends Exception
+{
 
 }

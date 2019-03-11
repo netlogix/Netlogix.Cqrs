@@ -1,10 +1,10 @@
 <?php
 namespace Netlogix\Cqrs\Validation\Validator;
 
-use Netlogix\Cqrs\Command\AbstractCommand;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Validation\Exception\InvalidValidationOptionsException;
 use Neos\Flow\Validation\Validator\AbstractValidator;
+use Netlogix\Cqrs\Command\AbstractCommand;
 
 /**
  * @Flow\Scope("singleton")

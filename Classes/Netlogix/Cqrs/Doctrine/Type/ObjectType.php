@@ -18,84 +18,84 @@ use Neos\Flow\Annotations as Flow;
  */
 class ObjectType extends \Doctrine\DBAL\Types\ObjectType
 {
-	/**
-	 * @var string
-	 */
-	const OBJECTBLOB = 'objectblob';
+    /**
+     * @var string
+     */
+    const OBJECTBLOB = 'objectblob';
 
-	/**
-	 * Gets the name of this type.
-	 *
-	 * @return string
-	 */
-	public function getName()
-	{
-		return self::OBJECTBLOB;
-	}
+    /**
+     * Gets the name of this type.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::OBJECTBLOB;
+    }
 
-	/**
-	 * Gets the SQL declaration snippet for a field of this type.
-	 *
-	 * @param array $fieldDeclaration
-	 * @param AbstractPlatform $platform
-	 * @return string
-	 */
-	public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-	{
-		return $platform->getBlobTypeDeclarationSQL($fieldDeclaration);
-	}
+    /**
+     * Gets the SQL declaration snippet for a field of this type.
+     *
+     * @param array $fieldDeclaration
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    {
+        return $platform->getBlobTypeDeclarationSQL($fieldDeclaration);
+    }
 
-	/**
-	 * Gets the (preferred) binding type for values of this type that
-	 * can be used when binding parameters to prepared statements.
-	 *
-	 * @return integer
-	 */
-	public function getBindingType()
-	{
-		return \PDO::PARAM_LOB;
-	}
+    /**
+     * Gets the (preferred) binding type for values of this type that
+     * can be used when binding parameters to prepared statements.
+     *
+     * @return integer
+     */
+    public function getBindingType()
+    {
+        return \PDO::PARAM_LOB;
+    }
 
-	/**
-	 * Converts a value from its database representation to its PHP representation
-	 * of this type.
-	 *
-	 * @param mixed $value The value to convert.
-	 * @param AbstractPlatform $platform The currently used database platform.
-	 * @return array The PHP representation of the value.
-	 */
-	public function convertToPHPValue($value, AbstractPlatform $platform)
-	{
+    /**
+     * Converts a value from its database representation to its PHP representation
+     * of this type.
+     *
+     * @param mixed $value The value to convert.
+     * @param AbstractPlatform $platform The currently used database platform.
+     * @return array The PHP representation of the value.
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
+    {
 
-		switch ($platform->getName()) {
-			case 'postgresql':
-				$value = (is_resource($value)) ? stream_get_contents($value) : $value;
-				$convertedValue = parent::convertToPHPValue(hex2bin($value), $platform);
-				break;
-			default:
-				$convertedValue = parent::convertToPHPValue($value, $platform);
-		}
+        switch ($platform->getName()) {
+            case 'postgresql':
+                $value = (is_resource($value)) ? stream_get_contents($value) : $value;
+                $convertedValue = parent::convertToPHPValue(hex2bin($value), $platform);
+                break;
+            default:
+                $convertedValue = parent::convertToPHPValue($value, $platform);
+        }
 
-		return $convertedValue;
-	}
+        return $convertedValue;
+    }
 
-	/**
-	 * Converts a value from its PHP representation to its database representation
-	 * of this type.
-	 *
-	 * @param array $value The value to convert.
-	 * @param AbstractPlatform $platform The currently used database platform.
-	 * @return mixed The database representation of the value.
-	 */
-	public function convertToDatabaseValue($value, AbstractPlatform $platform)
-	{
+    /**
+     * Converts a value from its PHP representation to its database representation
+     * of this type.
+     *
+     * @param array $value The value to convert.
+     * @param AbstractPlatform $platform The currently used database platform.
+     * @return mixed The database representation of the value.
+     */
+    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    {
 
-		switch ($platform->getName()) {
-			case 'postgresql':
-				return bin2hex(parent::convertToDatabaseValue($value, $platform));
-			default:
-				return parent::convertToDatabaseValue($value, $platform);
-		}
-	}
+        switch ($platform->getName()) {
+            case 'postgresql':
+                return bin2hex(parent::convertToDatabaseValue($value, $platform));
+            default:
+                return parent::convertToDatabaseValue($value, $platform);
+        }
+    }
 
 }

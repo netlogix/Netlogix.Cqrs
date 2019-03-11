@@ -8,21 +8,22 @@ namespace Netlogix\Cqrs\Command;
 /**
  * A command handler accpets commands and handles their execution
  */
-interface CommandHandlerInterface {
+interface CommandHandlerInterface
+{
 
-	/**
-	 * Check whether a command handler can handle a given command
-	 *
-	 * @param CommandInterface $command
-	 * @return boolean
-	 */
-	public function canHandle(CommandInterface $command);
+    /**
+     * Check whether a command handler can handle a given command
+     *
+     * @param CommandInterface $command
+     * @return boolean
+     */
+    public function canHandle(CommandInterface $command);
 
-	/**
-	 * Handle a given command
-	 *
-	 * @param CommandInterface $command
-	 * @return void
-	 */
-	public function handle(CommandInterface $command);
+    /**
+     * Handle a given command
+     *
+     * @param CommandInterface $command
+     * @return void
+     */
+    public function handle(CommandInterface $command);
 }
