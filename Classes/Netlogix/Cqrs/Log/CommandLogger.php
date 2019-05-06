@@ -6,6 +6,7 @@ namespace Netlogix\Cqrs\Log;
  * This file is part of the Netlogix.Cqrs package.
  */
 
+use Exception;
 use Neos\Flow\Annotations as Flow;
 use Netlogix\Cqrs\Command\AbstractCommand;
 
@@ -14,6 +15,7 @@ use Netlogix\Cqrs\Command\AbstractCommand;
  */
 class CommandLogger
 {
+
     /**
      * @var CommandLogEntryRepository
      * @Flow\Inject
@@ -21,18 +23,12 @@ class CommandLogger
     protected $commandLogEntryRepository;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     * @Flow\Inject
-     */
-    protected $entityManager;
-
-    /**
      * Log the given command
      *
      * @param AbstractCommand $command
-     * @param \Exception $exception
+     * @param Exception $exception
      */
-    public function logCommand(AbstractCommand $command, \Exception $exception = null)
+    public function logCommand(AbstractCommand $command, Exception $exception = null)
     {
         $commandLogEntry = $this->commandLogEntryRepository->findOneByCommand($command);
         $isNewObject = !$commandLogEntry;
@@ -41,6 +37,7 @@ class CommandLogger
             $commandLogEntry = new CommandLogEntry($command);
         }
 
+        $commandLogEntry->setStatus($command->getStatus());
         $commandLogEntry->setException($exception === null ? null : new ExceptionData($exception));
 
         if ($isNewObject) {
@@ -48,7 +45,6 @@ class CommandLogger
         } else {
             $this->commandLogEntryRepository->update($commandLogEntry);
         }
-        $this->entityManager->flush($commandLogEntry);
     }
 
 }
