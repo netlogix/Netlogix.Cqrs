@@ -113,6 +113,14 @@ class CommandLogEntry
     }
 
     /**
+     * @param int $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
      * @return ExceptionData
      */
     public function getException()

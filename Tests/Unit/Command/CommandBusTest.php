@@ -63,7 +63,7 @@ class CommandBusTest extends \Neos\Flow\Tests\UnitTestCase {
 		$mockCommandHandler = $this->getMockBuilder(CommandHandlerInterface::class)->getMockForAbstractClass();
 		
 		$mockCommandLogger = $this->getMockBuilder(CommandLogger::class)->getMock();
-		$mockCommandLogger->expects($this->once())->method('logCommand')->with($mockCommand);
+		$mockCommandLogger->expects($this->exactly(2))->method('logCommand')->with($mockCommand);
 
 		$commandBus = new CommandBus();
 		$this->inject($commandBus, 'commandHandlers', array($mockCommandHandler));

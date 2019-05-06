@@ -21,7 +21,11 @@ class CommandLogEntryTest extends \Neos\Flow\Tests\UnitTestCase {
 
 	public function testCommandTypeIsStoredInLogEntry() {
 		/** @var AbstractCommand|\PHPUnit_Framework_MockObject_MockObject $mockCommand */
-		$mockCommand = $this->getMockBuilder(AbstractCommand::class)->disableOriginalConstructor()->setMockClassName('CommandTestMock')->getMock();
+		$mockCommand = $this->getMockBuilder(AbstractCommand::class)
+            ->disableOriginalConstructor()
+            ->setMockClassName('CommandTestMock')
+            ->setMethodsExcept(['getCommandType'])
+            ->getMock();
 
 		$commandLogEntry = new CommandLogEntry($mockCommand);
 		$this->assertEquals('CommandTestMock', $commandLogEntry->getCommandType());
