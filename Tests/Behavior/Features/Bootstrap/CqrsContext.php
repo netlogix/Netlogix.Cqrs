@@ -82,6 +82,15 @@ class CqrsContext extends FlowContext {
 	}
 
 	/**
+	 * Get the name of the package containing the currently executed feature file.
+	 *
+	 * @return string
+	 */
+	public function getFeaturePackageName() {
+		return $this->package;
+	}
+
+	/**
 	 * @Given /^I have a "([^"]*)" command with parameters$/
 	 * @var string $commandName
 	 * @var TableNode $parameters
@@ -91,6 +100,17 @@ class CqrsContext extends FlowContext {
 	{
 		$commandClass = $this->resolveClassName($commandName, 'Domain\\Command\\', 'Command');
 		$this->commands[] = $this->objectFactory->create($parameters->getRowsHash(), $commandClass, $this->objectManager->get(PropertyMapper::class));
+	}
+
+	/**
+	 * @Given /^I have a "([^"]*)" command$/
+	 * @var string $commandName
+	 * @throws \Exception
+	 */
+	public function iHaveACommand($commandName)
+	{
+		$commandClass = $this->resolveClassName($commandName, 'Domain\\Command\\', 'Command');
+		$this->commands[] = new $commandClass;
 	}
 
 	/**
