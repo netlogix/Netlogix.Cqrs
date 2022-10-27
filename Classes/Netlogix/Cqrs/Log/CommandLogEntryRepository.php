@@ -32,7 +32,7 @@ class CommandLogEntryRepository extends Repository
     const ENTITY_CLASSNAME = CommandLogEntry::class;
 
     /**
-     * @Flow\Inject
+     * @Flow\Inject(lazy=false)
      * @var ObjectManager
      */
     protected $entityManager;
