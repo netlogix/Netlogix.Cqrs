@@ -2,7 +2,7 @@
     "name": "netlogix/cqrs",
     "type": "neos-package",
     "homepage": "http://websolutions.netlogix.de/",
-    "license": ["MIT"],
+    "license": "MIT",
     "require": {
         "neos/flow": "*",
         "netlogix/behatcommons": "*"
@@ -16,9 +16,6 @@
         "psr-0": {
             "Netlogix\\Cqrs\\Tests": "Tests"
         }
-    },
-    "replace": {
-        "netlogix/cqrs": "self.version"
     },
     "extra": {
         "applied-flow-migrations": [
