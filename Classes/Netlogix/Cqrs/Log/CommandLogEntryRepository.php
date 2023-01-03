@@ -6,10 +6,10 @@ namespace Netlogix\Cqrs\Log;
  * This file is part of the Netlogix.Cqrs package.
  */
 
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use Neos\Flow\Persistence\Repository;
@@ -33,7 +33,7 @@ class CommandLogEntryRepository extends Repository
 
     /**
      * @Flow\Inject(lazy=false)
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     protected $entityManager;
 
@@ -53,7 +53,7 @@ class CommandLogEntryRepository extends Repository
             ->getFirst();
     }
 
-    public function add($object)
+    public function add($object): void
     {
         if (!is_object($object) || !($object instanceof $this->entityClassName)) {
             $type = (is_object($object) ? get_class($object) : gettype($object));
@@ -82,7 +82,7 @@ class CommandLogEntryRepository extends Repository
         ]);
     }
 
-    public function update($object)
+    public function update($object): void
     {
         if (!is_object($object) || !($object instanceof $this->entityClassName)) {
             $type = (is_object($object) ? get_class($object) : gettype($object));

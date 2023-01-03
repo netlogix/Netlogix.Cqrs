@@ -26,7 +26,7 @@ class CommandValidator extends AbstractValidator
         foreach ($value->getValidationResult()->getFlattenedErrors() as $key => $validationResult) {
             /** @var \Neos\Flow\Validation\Error $error */
             foreach ($validationResult as $error) {
-                $this->result->forProperty($key)->addError($error);
+                $this->getResult()->forProperty($key)->addError($error);
             }
         }
     }

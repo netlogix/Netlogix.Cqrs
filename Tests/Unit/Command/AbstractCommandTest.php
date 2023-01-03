@@ -19,7 +19,7 @@ class AbstractCommandTest extends \Neos\Flow\Tests\UnitTestCase {
 	 */
 	protected $command;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->command = $this->getMockBuilder(AbstractCommand::class)->enableOriginalConstructor()->getMockForAbstractClass();
 	}
 
