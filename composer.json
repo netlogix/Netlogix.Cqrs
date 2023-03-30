@@ -45,5 +45,6 @@
             "Neos.Flow-20170125103800",
             "Neos.Flow-20170127183102"
         ]
-    }
+    },
+    "abandoned": true
 }
